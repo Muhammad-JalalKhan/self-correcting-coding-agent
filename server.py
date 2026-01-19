@@ -38,7 +38,7 @@ class AgentRequest(BaseModel):
 async def run_agent(request: AgentRequest):
     async def event_generator():
         config = {"configurable": {"thread_id": str(uuid.uuid4())}}
-        inputs = {"messages": [("user", request.task)]}
+        inputs = {"messages": [("user", request.prompt)]}
         
         # We use graph.stream to get updates as they happen
         for output in graph.stream(inputs, config=config, stream_mode="updates"):
