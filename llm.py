@@ -11,5 +11,5 @@ def get_model():
         api_key=os.getenv("OPENROUTER_API_KEY"),
         base_url="https://openrouter.ai/api/v1",
         streaming=False,  # <--- ADD THIS LINE FOR EXTRA SAFETY
-        # ... other settings ...
+        # ... other settigs ...
     )
