@@ -15,13 +15,15 @@ load_dotenv()
 
 app = FastAPI()
 
-# --- THE FIX STARTS HERE ---
-# This MUST come before your @app.post routes
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows your frontend IP
+    allow_origins=["*"], # This allows the handshake to happen
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"], # Explicitly allow OPTIONS
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 # --- THE FIX ENDS HERE ---
