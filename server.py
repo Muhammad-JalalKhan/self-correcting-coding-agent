@@ -1,53 +1,57 @@
 import os
 import json
-import uuid
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from langchain_core.messages import HumanMessage
-from graph import graph # Ensure your graph is imported
+from graph import graph  # Ensure your graph is imported correctly
 from dotenv import load_dotenv
-import json
-from fastapi.responses import StreamingResponse
-
 
 load_dotenv()
 
 app = FastAPI()
 
-from fastapi.middleware.cors import CORSMiddleware
-
-app = FastAPI()
-
+# 1. THE SECURITY PASS (CORS)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # This allows the handshake to happen
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# --- THE FIX ENDS HERE ---
 
-from pydantic import BaseModel
-
+# 2. THE FORM DEFINITION
 class AgentRequest(BaseModel):
-    # Make sure these names are EXACTLY what the frontend sends
-    prompt: str
-    thread_id: str = "default_thread" # Setting a default makes it optional
+    prompt: str  # <--- We will use 'prompt' everywhere
+    thread_id: str = "default_session"
+
+# 3. THE BRAIN LOGIC
 @app.post("/run-agent")
-async def run_agent(request: AgentRequest):
+async def run_agent_endpoint(request: AgentRequest):
     async def event_generator():
-        config = {"configurable": {"thread_id": str(uuid.uuid4())}}
-        inputs = {"messages": [("user", request.prompt)]}
-        
-        # We use graph.stream to get updates as they happen
-        for output in graph.stream(inputs, config=config, stream_mode="updates"):
-            # 'output' looks like {'programmer': {...}} or {'terminal': {...}}
-            yield f"data: {json.dumps(output)}\n\n"
+        try:
+            # FIX: Changed request.task to request.prompt to match the class above
+            inputs = {"messages": [("user", request.prompt)]}
+            config = {"configurable": {"thread_id": request.thread_id}}
+
+            # Use astream for real-time updates
+            async for chunk in graph.astream(inputs, config=config, stream_mode="updates"):
+                for node, values in chunk.items():
+                    # This sends a packet to the website for every step
+                    payload = json.dumps({"node": node, "status": "active"})
+                    yield f"data: {payload}\n\n"
+            
+            # Final message
+            final_state = graph.get_state(config)
+            final_msg = final_state.values["messages"][-1].content
+            yield f"data: {json.dumps({'node': 'end', 'output': final_msg})}\n\n"
+
+        except Exception as e:
+            yield f"data: {json.dumps({'node': 'error', 'message': str(e)})}\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 if __name__ == "__main__":
     import uvicorn
-    # Use 0.0.0.0 to make it accessible on your network IP
     uvicorn.run(app, host="0.0.0.0", port=8000)
