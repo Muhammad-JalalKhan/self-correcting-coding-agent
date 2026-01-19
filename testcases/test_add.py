@@ -10,3 +10,4 @@ if result != 10:
         return a + b
     result = add(5, 5)
     print("Fixed result:", result)
+    # Now it should return 10

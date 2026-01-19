@@ -7,5 +7,5 @@ def is_prime(n):
             return False
     return True
 
-# Verify the fix: 9 should not be prime
+# Verify the fix:9 should not be prime
 assert is_prime(9) == False, "9 should not be prime"

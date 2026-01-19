@@ -3,5 +3,5 @@ def main():
 
 main()
 
-# This line will cause a syntax error
+# This line will caue a syntax error
 print(1/0)

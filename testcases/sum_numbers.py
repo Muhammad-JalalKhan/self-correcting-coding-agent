@@ -44,3 +44,4 @@ print(f"Sum: {sum_numeric_values(test_list_4)}")
 test_list_5 = ["only", "strings", "here"]
 print(f"Input list: {test_list_5}")
 print(f"Sum: {sum_numeric_values(test_list_5)}")
+# End of test cases

@@ -8,3 +8,4 @@ def sum_strings(string_list):
 # Test the function
 result = sum_strings(['1', '2', '3'])
 print(result)
+# Expected output should be 6, but will get '123' instead

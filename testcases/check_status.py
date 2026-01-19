@@ -7,6 +7,6 @@ except ImportError:
     print('requests library is not installed. Installing now...')
     import subprocess
     subprocess.check_call(['pip', 'install', 'requests'])
-    # Retry after installation
+    # Retry ater installation
     response = requests.get('https://google.com')
     print(f'Status Code: {response.status_code}')
