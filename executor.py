@@ -10,7 +10,7 @@ def run_code_in_cloud(code: str):
         return {"status": "error", "message": "E2B_API_KEY missing"}
 
     try:
-        # Create safe sandbox
+        # Create safe sandboxing environment
         with Sandbox(api_key=api_key) as sb:
             execution = sb.run_code(code)
             if execution.error:
