@@ -6,7 +6,7 @@ def run_agent(user_prompt):
     config = {"configurable": {"thread_id": "prod_test_1"}}
     
     print("--- 🤖 Starting Agentic Loop ---")
-    # Using invoke to avoid OpenRouter streaming issues
+    # Using invoke to avoid OpenRouter streaming issue
     result = graph.invoke(inputs, config=config)
     
     print("\n--- ✅ FINAL RESULT ---")
