@@ -1,3 +1,3 @@
 while True:
     pass
-#looping forever
+#looping forevers
